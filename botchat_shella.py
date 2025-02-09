@@ -3,11 +3,10 @@ import requests
 
 # Konfigurasi model
 MODEL_CONFIG = {
-    "model": "deepseek-chat",  # Coba ganti ke "mistralai/Mistral-7B-Instruct" jika error
-    "api_url": "https://api.together.xyz/v1/completions"  # Ganti endpoint yang benar
+    "model": "mistralai/Mistral-7B-Instruct",  # Gunakan model yang tersedia di Together AI
+    "api_url": "https://api.together.xyz/v1/completions"  # Perbaiki URL API
 }
 
-# Fungsi untuk memanggil model
 def call_model(prompt, api_key):
     headers = {
         "Content-Type": "application/json",
@@ -22,7 +21,7 @@ def call_model(prompt, api_key):
         response = requests.post(MODEL_CONFIG["api_url"], json=data, headers=headers)
         response.raise_for_status()
         result = response.json()
-        return result.get("choices", [{}])[0].get("text", "No response from model")  # Perbaikan akses data
+        return result.get("choices", [{}])[0].get("text", "No response from model")
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}"
 
