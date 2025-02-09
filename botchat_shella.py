@@ -1,16 +1,13 @@
 import streamlit as st
 import requests
-import os
 
 # Konfigurasi model
 MODEL_CONFIG = {
-    "model": "deepseek-chat",
-    "api_url": "https://api.together.xyz/v1/completions"
-
+    "model": "deepseek-chat",  # Coba ganti ke "mistralai/Mistral-7B-Instruct" jika error
+    "api_url": "https://api.together.xyz/v1/completions"  # Ganti endpoint yang benar
 }
 
 # Fungsi untuk memanggil model
-
 def call_model(prompt, api_key):
     headers = {
         "Content-Type": "application/json",
@@ -18,16 +15,18 @@ def call_model(prompt, api_key):
     }
     data = {
         "model": MODEL_CONFIG["model"],
-        "messages": [{"role": "user", "content": prompt}],
+        "prompt": prompt,
         "max_tokens": 512
     }
     try:
         response = requests.post(MODEL_CONFIG["api_url"], json=data, headers=headers)
         response.raise_for_status()
         result = response.json()
-        return result.get("choices", [{}])[0].get("message", {}).get("content", "No response from model")
+        return result.get("choices", [{}])[0].get("text", "No response from model")  # Perbaikan akses data
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}"
+
+
 
 # Konfigurasi halaman
 st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", layout="wide")
