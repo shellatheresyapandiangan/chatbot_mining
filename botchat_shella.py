@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 import together
 
@@ -9,7 +7,7 @@ MODEL_CONFIG = {
 }
 
 # Fungsi untuk memanggil model
-def call_model(prompt, api_key, max_tokens=8192, temperature=0.6, top_p=0.95, top_k=50, repetition_penalty=1):
+def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, top_k=19, repetition_penalty=0.73):
     client = together.Together(api_key=api_key)
     response = client.chat.completions.create(
         model=MODEL_CONFIG["model"],
@@ -28,14 +26,15 @@ st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", la
 
 # Sidebar API Key dan Pengaturan Model
 st.sidebar.header("Konfigurasi API")
+st.sidebar.markdown("**Key API di-generate sendiri:** [Dapatkan API Key](https://api.together.ai/settings/api-keys)")
 api_key = st.sidebar.text_input("Masukkan API Key Together AI:", type="password")
 
 st.sidebar.header("Pengaturan Model")
-max_tokens = st.sidebar.slider("Output Length", min_value=256, max_value=8192, value=8192)
-temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.6)
-top_p = st.sidebar.slider("Top-P", min_value=0.0, max_value=1.0, value=0.95)
-top_k = st.sidebar.slider("Top-K", min_value=0, max_value=100, value=50)
-repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=1.0)
+max_tokens = st.sidebar.slider("Output Length", min_value=256, max_value=8192, value=4449)
+temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.55)
+top_p = st.sidebar.slider("Top-P", min_value=0.0, max_value=1.0, value=0.96)
+top_k = st.sidebar.slider("Top-K", min_value=0, max_value=100, value=19)
+repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=0.73)
 
 # Header
 st.markdown('<div class="header-title">LLM with Shella Pandiangan 🦙</div>', unsafe_allow_html=True)
