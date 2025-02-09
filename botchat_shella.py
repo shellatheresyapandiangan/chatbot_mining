@@ -7,7 +7,7 @@ MODEL_CONFIG = {
 }
 
 # Fungsi untuk memanggil model
-def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, top_k=19, repetition_penalty=1.2):
+def call_model(prompt, api_key, max_tokens=2048, temperature=0.4, top_p=0.95, top_k=50, repetition_penalty=1.5):
     client = Together(api_key=api_key)
     try:
         response = client.chat.completions.create(
@@ -18,7 +18,7 @@ def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, t
             top_p=top_p,
             top_k=top_k,
             repetition_penalty=repetition_penalty,
-            stop=["\n", "<|endoftext|>"],
+            stop=["\n", "<|endoftext|>", "."],
             stream=False
         )
         return response.choices[0].message.content if response.choices else "Terjadi kesalahan dalam mendapatkan respons."
@@ -35,11 +35,11 @@ st.sidebar.markdown("**Kalau tidak bisa generate API sendiri, berikut ini sample
 api_key = st.sidebar.text_input("Masukkan API Key Together AI:", type="password")
 
 st.sidebar.header("Pengaturan Model")
-max_tokens = st.sidebar.slider("Output Length", min_value=256, max_value=8192, value=4449)
-temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.55)
-top_p = st.sidebar.slider("Top-P", min_value=0.0, max_value=1.0, value=0.96)
-top_k = st.sidebar.slider("Top-K", min_value=0, max_value=100, value=19)
-repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=1.2)
+max_tokens = st.sidebar.slider("Output Length", min_value=256, max_value=8192, value=2048)
+temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.4)
+top_p = st.sidebar.slider("Top-P", min_value=0.0, max_value=1.0, value=0.95)
+top_k = st.sidebar.slider("Top-K", min_value=0, max_value=100, value=50)
+repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=1.5)
 
 # Header
 st.markdown('<div class="header-title">LLM with Shella Pandiangan 🦙</div>', unsafe_allow_html=True)
