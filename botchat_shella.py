@@ -1,112 +1,42 @@
 import streamlit as st
-import requests
+import together
 
 # Konfigurasi model
 MODEL_CONFIG = {
-    "model": "mistralai/Mistral-7B-Instruct",  # Gunakan model yang tersedia di Together AI
-    "api_url": "https://api.together.xyz/v1/completions"  # Perbaiki URL API
+    "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
 }
 
-def call_model(prompt, api_key):
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
-    data = {
-        "model": MODEL_CONFIG["model"],
-        "prompt": prompt,
-        "max_tokens": 512
-    }
-    try:
-        response = requests.post(MODEL_CONFIG["api_url"], json=data, headers=headers)
-        response.raise_for_status()
-        result = response.json()
-        return result.get("choices", [{}])[0].get("text", "No response from model")
-    except requests.exceptions.RequestException as e:
-        return f"Error: {str(e)}"
-
-
+# Fungsi untuk memanggil model
+def call_model(prompt, api_key, max_tokens=8192, temperature=0.6, top_p=0.95, top_k=50, repetition_penalty=1):
+    client = together.Together(api_key=api_key)
+    response = client.chat.completions.create(
+        model=MODEL_CONFIG["model"],
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+        repetition_penalty=repetition_penalty,
+        stream=True
+    )
+    return "".join(token.choices[0].delta.content for token in response if hasattr(token, 'choices'))
 
 # Konfigurasi halaman
 st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", layout="wide")
 
-# Sidebar API Key
+# Sidebar API Key dan Pengaturan Model
 st.sidebar.header("Konfigurasi API")
 api_key = st.sidebar.text_input("Masukkan API Key Together AI:", type="password")
 
-# Custom CSS untuk tampilan profesional
-st.markdown("""
-    <style>
-        body {
-            background-color: #121212 !important;
-            color: #FFFFFF;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        [data-testid="stSidebar"] {
-            background-color: #1E1E1E !important;
-            color: #FFFFFF;
-        }
-
-        .header-title {
-            text-align: center;
-            font-size: 42px;
-            font-weight: bold;
-            color: #FFD700;
-            margin-top: 20px;
-        }
-
-        .input-card {
-            background: #252525;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
-            margin: 30px auto;
-            width: 50%;
-        }
-
-        .footer {
-            text-align: center;
-            color: #AAAAAA;
-            font-size: 14px;
-            margin-top: 30px;
-        }
-
-        .running-text {
-            white-space: nowrap;
-            overflow: hidden;
-            box-sizing: border-box;
-            animation: marquee 10s linear infinite;
-            font-size: 20px;
-            color: #FFD700;
-            margin-top: 10px;
-            text-align: center;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-    </style>
-""", unsafe_allow_html=True)
+st.sidebar.header("Pengaturan Model")
+max_tokens = st.sidebar.slider("Output Length", min_value=256, max_value=8192, value=8192)
+temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.6)
+top_p = st.sidebar.slider("Top-P", min_value=0.0, max_value=1.0, value=0.95)
+top_k = st.sidebar.slider("Top-K", min_value=0, max_value=100, value=50)
+repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=1.0)
 
 # Header
 st.markdown('<div class="header-title">LLM with Shella Pandiangan 🦙</div>', unsafe_allow_html=True)
-
-# Running Text
-st.markdown('<div class="running-text">🚀 Selamat datang di AI Chatbot berbasis DeepSeek! Buat pertanyaan dan temukan jawabannya! 🌟</div>', unsafe_allow_html=True)
-
-# Sidebar About This App
-st.sidebar.markdown("""
-    ## About This App
-    Aplikasi ini dibuat menggunakan **DeepSeek** untuk membantu Anda mendapatkan jawaban cerdas dari AI.
-    
-    Dibuat oleh **Shella Theresya Pandiangan**.
-    
-    [LinkedIn Shella Theresya Pandiangan](https://id.linkedin.com/in/shellatheresyapandiangan)
-""", unsafe_allow_html=True)
-
-# Menampilkan gambar kecil di bawah About This App
-st.sidebar.image("shel.JPG", caption="Shella Pandiangan", width=80)
 
 # Input pengguna
 txt_container = st.container()
@@ -120,7 +50,7 @@ with txt_container:
             st.warning("Silakan masukkan API Key di sidebar.")
         else:
             with st.spinner("Memproses..."):
-                result = call_model(user_input, api_key)
+                result = call_model(user_input, api_key, max_tokens, temperature, top_p, top_k, repetition_penalty)
             st.success("Berhasil mendapatkan hasil!")
             st.subheader("Hasil:")
             st.write(result)
