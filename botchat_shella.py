@@ -3,24 +3,27 @@ from together import Together
 
 # Konfigurasi model
 MODEL_CONFIG = {
-    "model": "deepseek-ai/DeepSeek-R1"
+    "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 }
 
 # Fungsi untuk memanggil model
 def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, top_k=19, repetition_penalty=1.2):
     client = Together(api_key=api_key)
-    response = client.chat.completions.create(
-        model=MODEL_CONFIG["model"],
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=max_tokens,
-        temperature=temperature,
-        top_p=top_p,
-        top_k=top_k,
-        repetition_penalty=repetition_penalty,
-        stop=["\n", "<|endoftext|>"],
-        stream=False
-    )
-    return response.choices[0].message["content"] if response.choices else "Terjadi kesalahan dalam mendapatkan respons."
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_CONFIG["model"],
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            stop=["\n", "<|endoftext|>"],
+            stream=False
+        )
+        return response.choices[0].message.content if response.choices else "Terjadi kesalahan dalam mendapatkan respons."
+    except (IndexError, KeyError, TypeError, AttributeError):
+        return "Terjadi kesalahan dalam mendapatkan respons."
 
 # Konfigurasi halaman
 st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", layout="wide")
