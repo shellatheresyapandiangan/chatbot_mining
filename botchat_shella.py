@@ -1,14 +1,14 @@
 import streamlit as st
-import together
+from together import Together
 
 # Konfigurasi model
 MODEL_CONFIG = {
-    "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
+    "model": "deepseek-ai/DeepSeek-R1"
 }
 
 # Fungsi untuk memanggil model
 def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, top_k=19, repetition_penalty=0.73):
-    client = together.Together(api_key=api_key)
+    client = Together(api_key=api_key)
     response = client.chat.completions.create(
         model=MODEL_CONFIG["model"],
         messages=[{"role": "user", "content": prompt}],
@@ -17,6 +17,7 @@ def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, t
         top_p=top_p,
         top_k=top_k,
         repetition_penalty=repetition_penalty,
+        stop=["<｜end▁of▁sentence｜>"],
         stream=True
     )
     return "".join(token.choices[0].delta.content for token in response if hasattr(token, 'choices'))
