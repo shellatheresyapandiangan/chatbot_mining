@@ -1,31 +1,39 @@
 import streamlit as st
 import requests
+import os
 
 # Konfigurasi model
 MODEL_CONFIG = {
-    "model": "deepseek-r1:1.5b",
-    "provider": "ollama",
-    "apiKey": "",  # Isi dengan API key jika diperlukan
-    "title": "LLM with Shella Pandiangan"
+    "model": "deepseek-chat",
+    "api_url": "https://api.together.xyz/v1/chat/completions"
 }
 
-# Endpoint API model
-API_URL = "http://localhost:11434/api/generate"
-
 # Fungsi untuk memanggil model
-def call_model(prompt):
-    headers = {"Content-Type": "application/json"}
-    data = {"model": MODEL_CONFIG["model"], "prompt": prompt, "stream": False}
+
+def call_model(prompt, api_key):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    data = {
+        "model": MODEL_CONFIG["model"],
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 512
+    }
     try:
-        response = requests.post(API_URL, json=data, headers=headers)
+        response = requests.post(MODEL_CONFIG["api_url"], json=data, headers=headers)
         response.raise_for_status()
         result = response.json()
-        return result.get("response", "No response from model")
+        return result.get("choices", [{}])[0].get("message", {}).get("content", "No response from model")
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}"
 
 # Konfigurasi halaman
 st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", layout="wide")
+
+# Sidebar API Key
+st.sidebar.header("Konfigurasi API")
+api_key = st.sidebar.text_input("Masukkan API Key Together AI:", type="password")
 
 # Custom CSS untuk tampilan profesional
 st.markdown("""
@@ -56,20 +64,6 @@ st.markdown("""
             box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
             margin: 30px auto;
             width: 50%;
-        }
-
-        .custom-button {
-            background-color: #FFD700;
-            color: black;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .custom-button:hover {
-            background-color: #FFC107;
         }
 
         .footer {
@@ -105,7 +99,7 @@ st.markdown('<div class="running-text">🚀 Selamat datang di AI Chatbot berbasi
 # Sidebar About This App
 st.sidebar.markdown("""
     ## About This App
-    Aplikasi ini dibuat menggunakan **Model LLM** untuk membantu Anda mendapatkan jawaban cerdas dari AI.
+    Aplikasi ini dibuat menggunakan **DeepSeek** untuk membantu Anda mendapatkan jawaban cerdas dari AI.
     
     Dibuat oleh **Shella Theresya Pandiangan**.
     
@@ -113,23 +107,25 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # Menampilkan gambar kecil di bawah About This App
-st.sidebar.image("shel.JPG", caption="Shella Pandiangan", width=80)
+st.sidebar.image("image.png", caption="Shella Pandiangan", width=80)
 
 # Input pengguna
 txt_container = st.container()
 with txt_container:
     st.markdown('<div class="input-card">', unsafe_allow_html=True)
-    user_input = st.text_area("Coba tanyakan apa saja:", height=150, placeholder="Tulis pertanyaan Anda di sini...")
+    user_input = st.text_area("Masukkan prompt:", height=150, placeholder="Tulis pertanyaan Anda di sini...")
     if st.button("Generate 🚀", key="generate_button", help="Klik untuk menjalankan AI model"):
         if user_input.strip() == "":
             st.warning("Silakan masukkan prompt terlebih dahulu.")
+        elif not api_key:
+            st.warning("Silakan masukkan API Key di sidebar.")
         else:
             with st.spinner("Memproses..."):
-                result = call_model(user_input)
+                result = call_model(user_input, api_key)
             st.success("Berhasil mendapatkan hasil!")
             st.subheader("Hasil:")
             st.write(result)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
-st.markdown('<div class="footer">Dibuat oleh Shella Theresya Pandiangan menggunakan salah satu model LLM.</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">Dibuat oleh Shella Theresya Pandiangan menggunakan Streamlit dan model DeepSeek.</div>', unsafe_allow_html=True)
