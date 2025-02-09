@@ -1,4 +1,4 @@
-pip install together
+
 
 import streamlit as st
 import together
