@@ -27,6 +27,7 @@ st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", la
 # Sidebar API Key dan Pengaturan Model
 st.sidebar.header("Konfigurasi API")
 st.sidebar.markdown("**Key API di-generate sendiri:** [Dapatkan API Key](https://api.together.ai/settings/api-keys)")
+st.sidebar.markdown("**Kalau tidak bisa generate API sendiri, berikut ini sample API:** `4136908e38206c232c380542563d986ccd638a22ab04d3326ada29f59ee91cbe` dan paste di box bawah ini")
 api_key = st.sidebar.text_input("Masukkan API Key Together AI:", type="password")
 
 st.sidebar.header("Pengaturan Model")
