@@ -113,7 +113,7 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 
 # Menampilkan gambar kecil di bawah About This App
-st.sidebar.image("shel.jpg", caption="Shella Pandiangan", width=80)
+st.sidebar.image("shel.JPG", caption="Shella Pandiangan", width=80)
 
 # Input pengguna
 txt_container = st.container()
