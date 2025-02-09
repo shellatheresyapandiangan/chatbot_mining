@@ -109,7 +109,6 @@ st.sidebar.markdown("""
 # Menampilkan gambar kecil di bawah About This App
 st.sidebar.image("shel.JPG", caption="Shella Pandiangan", width=80)
 
-
 # Input pengguna
 txt_container = st.container()
 with txt_container:
