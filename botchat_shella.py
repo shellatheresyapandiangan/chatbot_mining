@@ -5,7 +5,8 @@ import os
 # Konfigurasi model
 MODEL_CONFIG = {
     "model": "deepseek-chat",
-    "api_url": "https://api.together.xyz/v1/chat/completions"
+    "api_url": "https://api.together.xyz/v1/completions"
+
 }
 
 # Fungsi untuk memanggil model
