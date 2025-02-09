@@ -59,4 +59,4 @@ with txt_container:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
-st.markdown('<div class="footer">Dibuat oleh Shella Theresya Pandiangan menggunakan Streamlit dan model DeepSeek.</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">Dibuat oleh Shella Theresya Pandiangan menggunakan DeepSeek-R1, Semoga Membantu!.</div>', unsafe_allow_html=True)
