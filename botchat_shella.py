@@ -7,7 +7,7 @@ MODEL_CONFIG = {
 }
 
 # Fungsi untuk memanggil model
-def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, top_k=19, repetition_penalty=0.73):
+def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, top_k=19, repetition_penalty=1.2):
     client = Together(api_key=api_key)
     response = client.chat.completions.create(
         model=MODEL_CONFIG["model"],
@@ -17,10 +17,10 @@ def call_model(prompt, api_key, max_tokens=4449, temperature=0.55, top_p=0.96, t
         top_p=top_p,
         top_k=top_k,
         repetition_penalty=repetition_penalty,
-        stop=["<｜end▁of▁sentence｜>"],
-        stream=True
+        stop=["\n", "<|endoftext|>"],
+        stream=False
     )
-    return "".join(token.choices[0].delta.content for token in response if hasattr(token, 'choices'))
+    return response.choices[0].message["content"] if response.choices else "Terjadi kesalahan dalam mendapatkan respons."
 
 # Konfigurasi halaman
 st.set_page_config(page_title="LLM with Shella Pandiangan", page_icon="🦙", layout="wide")
@@ -36,7 +36,7 @@ max_tokens = st.sidebar.slider("Output Length", min_value=256, max_value=8192, v
 temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.55)
 top_p = st.sidebar.slider("Top-P", min_value=0.0, max_value=1.0, value=0.96)
 top_k = st.sidebar.slider("Top-K", min_value=0, max_value=100, value=19)
-repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=0.73)
+repetition_penalty = st.sidebar.slider("Repetition Penalty", min_value=0.5, max_value=2.0, value=1.2)
 
 # Header
 st.markdown('<div class="header-title">LLM with Shella Pandiangan 🦙</div>', unsafe_allow_html=True)
